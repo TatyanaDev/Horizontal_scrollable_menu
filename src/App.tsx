@@ -1,7 +1,12 @@
-import "./App.css";
+import { Route, BrowserRouter, Routes } from "react-router-dom";
+import ScrollableMenu from "./page/ScrollableMenu";
 
-function App() {
-  return <div></div>;
-}
+const App = () => (
+  <BrowserRouter>
+    <Routes>
+      <Route path="/" element={<ScrollableMenu />} />
+    </Routes>
+  </BrowserRouter>
+);
 
 export default App;

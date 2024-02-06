@@ -1,0 +1,85 @@
+.scrolling-right {
+  position: fixed;
+  z-index: 4;
+  top: 3px;
+  left: 0;
+}
+
+.scrolling-left {
+  position: fixed;
+  z-index: 4;
+  top: 3px;
+  right: 0;
+}
+
+.titles {
+  box-shadow: 0px 5px 10px rgba(126, 154, 182, 0.25);
+  background: #f4f5f6;
+  padding: 16px 12px;
+  position: fixed;
+  display: flex;
+  z-index: 3;
+  right: 0;
+  left: 0;
+  top: 0;
+}
+
+.titles::-webkit-scrollbar {
+  display: none;
+}
+
+.titles > * {
+  max-width: calc(100vw - 57px);
+  overflow: hidden;
+  margin: 0 auto;
+  display: flex;
+}
+
+.titles > * > button {
+  border-radius: 20px;
+}
+
+.titles > * > button:not(:last-of-type) {
+  margin-right: 4px;
+}
+
+.titles > * > button:not(:first-of-type) {
+  margin-left: 4px;
+}
+
+.titles > * > * {
+  background: #f4f5f6;
+  line-height: 24px;
+  padding: 4px 16px;
+  max-height: 32px;
+  color: #353945;
+  font-size: 14px;
+  border: none;
+}
+
+.titles > * > *:hover {
+  background: #e4e4e4;
+}
+
+.titles > * > .active {
+  background: #353945;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.blocks {
+  width: calc(100vw - 2rem);
+  margin: 76px auto 0;
+}
+
+.blocks .title {
+  margin-bottom: 4px;
+  line-height: 24px;
+  font-weight: 600;
+  color: #373737;
+}
+
+.blocks .description {
+  margin-bottom: 12px;
+  color: #373737;
+}
