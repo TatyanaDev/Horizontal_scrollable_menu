@@ -39,6 +39,8 @@ export const useHelperScrollingServices = () => {
   const location = useLocation();
 
   useEffect(() => {
+    const titlesElement = document.querySelector(".titles");
+
     const activeServiceBlock = {
       id: location.state?.activeTitle || 0,
       position: 0,
@@ -61,8 +63,8 @@ export const useHelperScrollingServices = () => {
     document?.querySelector(`.titles > * > [data-id="${activeServiceBlock.id}"]`)?.classList.add("active");
 
     const timeoutId = window.setTimeout(() => setActiveTitlePosition(timeoutId), TIMEOUT_DELAY);
-    
-    document?.querySelector(".titles")?.addEventListener("click", (event) => {
+
+    const clickHandler = (event: Event) => {
       event.preventDefault();
 
       const id = (event.target as HTMLElement)?.dataset.id;
@@ -73,6 +75,10 @@ export const useHelperScrollingServices = () => {
 
         scrollToActiveTitle(id);
       }
-    });
+    };
+
+    titlesElement?.addEventListener("click", clickHandler);
+
+    return () => titlesElement?.removeEventListener("click", clickHandler);
   }, [location.state?.activeTitle]);
 };
