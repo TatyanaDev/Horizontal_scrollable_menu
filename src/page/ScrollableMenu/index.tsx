@@ -1,7 +1,7 @@
 import { useLocation } from "react-router";
 import { useRef } from "react";
-import { HEIGHT_SCROLL_TOP, HEIGHT_TITLES_BLOCK, TIMEOUT_DELAY, services } from "../../constants";
-import { scrollHandler, scrollLeft, scrollRight, setActiveTitlePosition } from "../../helpers";
+import { scrollHandler, scrollLeft, scrollRight, scrollToActiveTitle, setActiveTitlePosition } from "../../helpers";
+import { HEIGHT_TITLES_BLOCK, TIMEOUT_DELAY, services } from "../../constants";
 import useScrollingServices from "../../hook";
 import "./styles.css";
 
@@ -48,20 +48,10 @@ const ScrollableMenu = () => {
       const id = event.target?.dataset.id;
 
       if (id) {
-        document?.querySelector(`.titles > * > .active`)?.classList.remove("active");
-        document?.querySelector(`.titles > * > [data-id="${id}"]`)?.classList.add("active");
-
-        const pagePosition = window.scrollY;
-        const activeTopPosition: number | undefined = document?.querySelector(`.blocks [data-id="${id}"]`)?.getBoundingClientRect().top;
-        const titlesElem: HTMLDivElement | null = document?.querySelector(".titles");
-        const titlesBottomLinePosition: number | null = titlesElem && titlesElem?.getBoundingClientRect().bottom - (titlesElem?.getBoundingClientRect().bottom - titlesElem.clientHeight);
-
-        if (activeTopPosition && titlesBottomLinePosition) {
-          window?.scrollTo({
-            top: activeTopPosition + pagePosition - (titlesBottomLinePosition + HEIGHT_TITLES_BLOCK) + HEIGHT_SCROLL_TOP,
-            behavior: "smooth",
-          });
-        }
+        document.querySelector(`.titles > * > .active`)?.classList.remove("active");
+        document.querySelector(`.titles > * > [data-id="${id}"]`)?.classList.add("active");
+        
+        scrollToActiveTitle(id);
       }
     });
 

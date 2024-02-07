@@ -1,6 +1,6 @@
 import { RefObject, useEffect } from "react";
 import { Location } from "react-router";
-import { HEIGHT_SCROLL_TOP } from "../constants";
+import { scrollToActiveTitle } from "../helpers";
 
 const useScrollingServices = (leftArrow: RefObject<HTMLDivElement>, scrollHandler: (timestamp: number) => void, location: Location, HEIGHT_TITLES_BLOCK: number) =>
   useEffect(() => {
@@ -17,22 +17,7 @@ const useScrollingServices = (leftArrow: RefObject<HTMLDivElement>, scrollHandle
       }
     };
 
-    const scrollToActiveTitle = () => {
-      const activeTitleElement = document.querySelector<HTMLDivElement>(`.blocks [data-id="${location.state?.activeTitle}"]`);
-      const titlesElement = document.querySelector<HTMLDivElement>(".titles");
-
-      if (activeTitleElement && titlesElement) {
-        const titlesBottomLinePosition = titlesElement.getBoundingClientRect().bottom - titlesElement.clientHeight;
-        const activeTopPosition = activeTitleElement.getBoundingClientRect().top;
-
-        window.scrollTo({
-          top: window.scrollY + activeTopPosition - titlesBottomLinePosition - HEIGHT_TITLES_BLOCK + HEIGHT_SCROLL_TOP,
-          behavior: "smooth",
-        });
-      }
-    };
-
-    scrollToActiveTitle();
+    scrollToActiveTitle(location.state?.activeTitle);
 
     window.addEventListener("scroll", throttledScrollHandler);
 

@@ -1,5 +1,5 @@
 import { MouseEvent, RefObject } from "react";
-import { MARGIN_BOTTOM, SCROLL_STEP_SIZE, TIMEOUT_DELAY } from "../constants";
+import { HEIGHT_TITLES_BLOCK, MARGIN_BOTTOM, SCROLL_STEP_SIZE, TIMEOUT_DELAY } from "../constants";
 
 export const setActiveTitlePosition = (timeoutId: number): void => {
   const activeElement = document.querySelector<HTMLDivElement>(".titles > * > .active");
@@ -119,3 +119,18 @@ function handleScroll(titlesContainer: RefObject<HTMLDivElement>, leftArrow: Ref
   leftArrow.current!.style.display = atStart ? "none" : "block";
   rightArrow.current!.style.display = atEnd ? "none" : "block";
 }
+
+export const scrollToActiveTitle = (id: string) => {
+  const activeTitleElement = document.querySelector<HTMLDivElement>(`.blocks [data-id="${id}"]`);
+  const titlesElement = document.querySelector<HTMLDivElement>(".titles");
+
+  if (activeTitleElement && titlesElement) {
+    const titlesBottomLinePosition = titlesElement.getBoundingClientRect().bottom - titlesElement.clientHeight;
+    const activeTopPosition = activeTitleElement.getBoundingClientRect().top;
+
+    window.scrollTo({
+      top: window.scrollY + activeTopPosition - titlesBottomLinePosition - HEIGHT_TITLES_BLOCK,
+      behavior: "smooth",
+    });
+  }
+};

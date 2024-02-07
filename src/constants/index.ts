@@ -1,5 +1,4 @@
 export const HEIGHT_TITLES_BLOCK = 64;
-export const HEIGHT_SCROLL_TOP = 56;
 export const SCROLL_STEP_SIZE = 100;
 export const TIMEOUT_DELAY = 50;
 export const MARGIN_BOTTOM = 10;
