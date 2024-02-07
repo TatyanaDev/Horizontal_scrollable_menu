@@ -1,60 +1,43 @@
-import { useRef } from "react";
+import { MouseEvent, useRef } from "react";
 import { useHelperScrollingServices, useScrollingServices } from "../../hooks";
 import { scrollHandler, scrollLeft, scrollRight } from "../../helpers";
-import { HEIGHT_TITLES_BLOCK, services } from "../../constants";
-import "./styles.css";
-
-interface Service {
-  title: string;
-  description: string;
-}
+import { HEIGHT_TITLES_BLOCK } from "../../constants";
+import Content from "../../components/Content";
+import Header from "../../components/Header";
+import Arrow from "../../components/Arrow";
 
 const ScrollableMenu = () => {
-  const titlesContainer = useRef<HTMLDivElement>(null);
-  const rightArrow = useRef<HTMLDivElement>(null);
-  const leftArrow = useRef<HTMLDivElement>(null);
+  const titlesContainerRef = useRef<HTMLDivElement>(null);
+  const rightArrowRef = useRef<HTMLDivElement>(null);
+  const leftArrowRef = useRef<HTMLDivElement>(null);
 
-  useScrollingServices(leftArrow, scrollHandler, HEIGHT_TITLES_BLOCK);
+  useScrollingServices(leftArrowRef, scrollHandler, HEIGHT_TITLES_BLOCK);
 
   useHelperScrollingServices();
 
+  const onClickRight = (event: MouseEvent<HTMLDivElement>) => scrollRight(event, titlesContainerRef, leftArrowRef, rightArrowRef);
+
+  const onClickLeft = (event: MouseEvent<HTMLDivElement>) => scrollLeft(event, titlesContainerRef, leftArrowRef, rightArrowRef);
+
   return (
     <>
-      <div
-        className="scrolling-right"
-        onClick={(event) => scrollRight(event, titlesContainer, leftArrow, rightArrow)}
-        ref={leftArrow}
-      >
-        <p>&#x2BC7;</p>
-      </div>
+      <Arrow
+        nameOfClass="scrolling-right"
+        onClick={onClickRight}
+        hookRef={leftArrowRef}
+        arrowSign="&#x2BC7;"
+      />
 
-      <div className="titles">
-        <div ref={titlesContainer}>
-          {services.map((service: Service, idx: number) => (
-            <button data-id={`${idx}`} key={idx}>
-              {service.title}
-            </button>
-          ))}
-        </div>
-      </div>
+      <Header titlesContainerRef={titlesContainerRef} />
 
-      <div
-        className="scrolling-left"
-        onClick={(event) => scrollLeft(event, titlesContainer, leftArrow, rightArrow)}
-        ref={rightArrow}
-      >
-        <p>&#x2BC8;</p>
-      </div>
+      <Arrow
+        nameOfClass="scrolling-left"
+        onClick={onClickLeft}
+        hookRef={rightArrowRef}
+        arrowSign="&#x2BC8;"
+      />
 
-      <div className="blocks">
-        {services?.map((service: Service, idx: number) => (
-          <div data-id={`${idx}`} key={idx}>
-            <h1 className="title">{service.title}</h1>
-
-            <p className="description">{service.description}</p>
-          </div>
-        ))}
-      </div>
+      <Content />
     </>
   );
 };

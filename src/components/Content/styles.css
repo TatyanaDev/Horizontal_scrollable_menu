@@ -1,0 +1,16 @@
+.blocks {
+  width: calc(100vw - 2rem);
+  margin: 76px auto 0;
+}
+
+.blocks .title {
+  margin-bottom: 4px;
+  line-height: 24px;
+  font-weight: 600;
+  color: #373737;
+}
+
+.blocks .description {
+  margin-bottom: 12px;
+  color: #373737;
+}
