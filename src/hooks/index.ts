@@ -61,11 +61,11 @@ export const useHelperScrollingServices = () => {
     document?.querySelector(`.titles > * > [data-id="${activeServiceBlock.id}"]`)?.classList.add("active");
 
     const timeoutId = window.setTimeout(() => setActiveTitlePosition(timeoutId), TIMEOUT_DELAY);
-
-    document?.querySelector(".titles")?.addEventListener("click", (event: any) => {
+    
+    document?.querySelector(".titles")?.addEventListener("click", (event) => {
       event.preventDefault();
 
-      const id = event.target?.dataset.id;
+      const id = (event.target as HTMLElement)?.dataset.id;
 
       if (id) {
         document.querySelector(`.titles > * > .active`)?.classList.remove("active");

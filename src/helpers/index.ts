@@ -23,7 +23,7 @@ export const setActiveTitlePosition = (timeoutId: number): void => {
 
 export const scrollHandler = () => {
   const titlesElem: HTMLDivElement | null = document?.querySelector(".titles");
-  const lastButton: any = document?.querySelector(".titles > *")?.lastElementChild;
+  const lastButton: HTMLElement | null = document?.querySelector(".titles > *:last-child")
   const activeElem: HTMLDivElement | null | undefined = titlesElem?.querySelector(".active");
   const leftArrow: HTMLDivElement | null = document?.querySelector(".scrolling-right");
   const rightArrow: HTMLDivElement | null = document?.querySelector(".scrolling-left");
@@ -47,7 +47,7 @@ export const scrollHandler = () => {
     leftArrow.style.display = "block";
   }
 
-  if (selectedId && parseInt(selectedId) === lastButton.dataset.id && rightArrow) {
+  if (selectedId && lastButton && lastButton.dataset.id && parseInt(selectedId) === parseInt(lastButton.dataset.id) && rightArrow) {
     rightArrow.style.display = "none";
   } else if (rightArrow) {
     rightArrow.style.display = "block";
@@ -59,7 +59,11 @@ export const scrollHandler = () => {
 
     entries.forEach((entry: IntersectionObserverEntry) => {
       if (entry.isIntersecting && entry.intersectionRatio === 1) {
-        idsInView.push((entry.target as any).dataset.id);
+        const id = (entry.target as HTMLElement).dataset.id;
+
+        if (id) {
+          idsInView.push(id);
+        }
       }
     });
 
@@ -74,13 +78,16 @@ export const scrollHandler = () => {
   const observer = new IntersectionObserver(scrollObserver, { threshold: 1.0 });
 
   document?.querySelectorAll(".blocks > *").forEach((elem: Element) => {
-    const position: any = titlesBottom && elem?.getBoundingClientRect().top - titlesBottom;
+    let position
 
-    observer.observe(elem);
-
-    if (position < MARGIN_BOTTOM) {
-      selected.id = (elem as HTMLElement).dataset.id;
-      selected.position = position;
+    if (titlesBottom && elem) {
+      position = elem.getBoundingClientRect().top - titlesBottom;
+      observer.observe(elem);
+  
+      if (position < MARGIN_BOTTOM) {
+        selected.id = (elem as HTMLElement).dataset.id;
+        selected.position = position;
+      }
     }
   });
 
