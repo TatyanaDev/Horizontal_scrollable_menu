@@ -1,12 +1,19 @@
 import { MouseEvent, RefObject } from "react";
 import { MARGIN_BOTTOM, SCROLL_STEP_SIZE, TIMEOUT_DELAY } from "../constants";
 
-export const setActiveTitlePosition = (timeoutId: number) => {
-  const activePosition: any = document?.querySelector(".titles > * > .active")?.getBoundingClientRect().left;
-  const titlesBlockPosition: any = document?.querySelector(".titles > *")?.getBoundingClientRect().left;
-  const currentPosition: any = document?.querySelector(".titles > *")?.scrollLeft;
+export const setActiveTitlePosition = (timeoutId: number): void => {
+  const activeElement = document.querySelector<HTMLDivElement>(".titles > * > .active");
+  const titlesBlock = document.querySelector<HTMLDivElement>(".titles > *");
+  
+  if (!activeElement || !titlesBlock) {
+    return;
+  }
 
-  document.querySelector(".titles > *")?.scrollTo({
+  const titlesBlockPosition = titlesBlock.getBoundingClientRect().left;
+  const activePosition = activeElement.getBoundingClientRect().left;
+  const currentPosition = titlesBlock.scrollLeft;
+
+  titlesBlock.scrollTo({
     left: activePosition - titlesBlockPosition + currentPosition,
     behavior: "smooth",
   });
