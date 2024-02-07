@@ -1,12 +1,7 @@
 import { useLocation } from "react-router";
 import { useRef } from "react";
-import {
-  scrollHandler,
-  scrollLeft,
-  scrollRight,
-  setActiveTitlePosition,
-} from "../../helpers";
-import { HEIGHT_TITLES_BLOCK, services } from "../../constants";
+import { HEIGHT_SCROLL_TOP, HEIGHT_TITLES_BLOCK, TIMEOUT_DELAY, services } from "../../constants";
+import { scrollHandler, scrollLeft, scrollRight, setActiveTitlePosition } from "../../helpers";
 import useScrollingServices from "../../hook";
 import "./styles.css";
 
@@ -33,10 +28,7 @@ const ScrollableMenu = () => {
     const headerBottom = document?.querySelector(".titles");
 
     if (headerBottom) {
-      const position =
-        elem?.getBoundingClientRect().top -
-        headerBottom.getBoundingClientRect().bottom +
-        HEIGHT_TITLES_BLOCK;
+      const position = elem?.getBoundingClientRect().top - headerBottom.getBoundingClientRect().bottom + HEIGHT_TITLES_BLOCK;
 
       if (position < HEIGHT_TITLES_BLOCK) {
         activeServiceBlock.id = Number((elem as HTMLElement).dataset.id);
@@ -46,48 +38,27 @@ const ScrollableMenu = () => {
   });
 
   document?.querySelector(`.titles > * > .active`)?.classList.remove("active");
-  document
-    ?.querySelector(`.titles > * > [data-id="${activeServiceBlock.id}"]`)
-    ?.classList.add("active");
+  document?.querySelector(`.titles > * > [data-id="${activeServiceBlock.id}"]`)?.classList.add("active");
 
-  const timeoutId = window.setTimeout(
-    () => setActiveTitlePosition(timeoutId),
-    50
-  );
+  const timeoutId = window.setTimeout(() => setActiveTitlePosition(timeoutId), TIMEOUT_DELAY);
 
-  document
-    ?.querySelector(".titles")
-    ?.addEventListener("click", (event: any) => {
+  document?.querySelector(".titles")?.addEventListener("click", (event: any) => {
       event.preventDefault();
 
       const id = event.target?.dataset.id;
 
       if (id) {
-        document
-          ?.querySelector(`.titles > * > .active`)
-          ?.classList.remove("active");
-        document
-          ?.querySelector(`.titles > * > [data-id="${id}"]`)
-          ?.classList.add("active");
+        document?.querySelector(`.titles > * > .active`)?.classList.remove("active");
+        document?.querySelector(`.titles > * > [data-id="${id}"]`)?.classList.add("active");
 
         const pagePosition = window.scrollY;
-        const activeTopPosition: number | undefined = document
-          ?.querySelector(`.blocks [data-id="${id}"]`)
-          ?.getBoundingClientRect().top;
-        const titlesElem: HTMLDivElement | null =
-          document?.querySelector(".titles");
-        const titlesBottomLinePosition: number | null =
-          titlesElem &&
-          titlesElem?.getBoundingClientRect().bottom -
-            (titlesElem?.getBoundingClientRect().bottom -
-              titlesElem.clientHeight);
+        const activeTopPosition: number | undefined = document?.querySelector(`.blocks [data-id="${id}"]`)?.getBoundingClientRect().top;
+        const titlesElem: HTMLDivElement | null = document?.querySelector(".titles");
+        const titlesBottomLinePosition: number | null = titlesElem && titlesElem?.getBoundingClientRect().bottom - (titlesElem?.getBoundingClientRect().bottom - titlesElem.clientHeight);
 
         if (activeTopPosition && titlesBottomLinePosition) {
           window?.scrollTo({
-            top:
-              activeTopPosition +
-              pagePosition -
-              (titlesBottomLinePosition + HEIGHT_TITLES_BLOCK),
+            top: activeTopPosition + pagePosition - (titlesBottomLinePosition + HEIGHT_TITLES_BLOCK) + HEIGHT_SCROLL_TOP,
             behavior: "smooth",
           });
         }
@@ -98,9 +69,7 @@ const ScrollableMenu = () => {
     <>
       <div
         className="scrolling-right"
-        onClick={(event) =>
-          scrollRight(event, titlesContainer, leftArrow, rightArrow)
-        }
+        onClick={(event) => scrollRight(event, titlesContainer, leftArrow, rightArrow)}
         ref={leftArrow}
       >
         <p>&#x2BC7;</p>
@@ -118,10 +87,7 @@ const ScrollableMenu = () => {
 
       <div
         className="scrolling-left"
-        onClick={(event) =>
-          scrollLeft(event, titlesContainer, leftArrow, rightArrow)
-        }
-        
+        onClick={(event) => scrollLeft(event, titlesContainer, leftArrow, rightArrow)}
         ref={rightArrow}
       >
         <p>&#x2BC8;</p>

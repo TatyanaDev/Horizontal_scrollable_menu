@@ -1,27 +1,27 @@
-import { MouseEvent } from 'react';
+import { MouseEvent, RefObject } from "react";
+import { MARGIN_BOTTOM, SCROLL_STEP_SIZE, TIMEOUT_DELAY } from "../constants";
 
 export const setActiveTitlePosition = (timeoutId: number) => {
-  const activePosition: any = document?.querySelector('.titles > * > .active')?.getBoundingClientRect().left;
-  const titlesBlockPosition: any = document?.querySelector('.titles > *')?.getBoundingClientRect().left;
-  const currentPosition: any = document?.querySelector('.titles > *')?.scrollLeft;
+  const activePosition: any = document?.querySelector(".titles > * > .active")?.getBoundingClientRect().left;
+  const titlesBlockPosition: any = document?.querySelector(".titles > *")?.getBoundingClientRect().left;
+  const currentPosition: any = document?.querySelector(".titles > *")?.scrollLeft;
 
-  document.querySelector('.titles > *')?.scrollTo({
+  document.querySelector(".titles > *")?.scrollTo({
     left: activePosition - titlesBlockPosition + currentPosition,
-    behavior: 'smooth',
+    behavior: "smooth",
   });
 
   clearTimeout(timeoutId);
 };
 
 export const scrollHandler = () => {
-  const titlesElem: HTMLDivElement | null = document?.querySelector('.titles');
-  const lastButton: any = document?.querySelector('.titles > *')?.lastElementChild;
-  const activeElem: HTMLDivElement | null | undefined = titlesElem?.querySelector('.active');
-  const leftArrow: HTMLDivElement | null = document?.querySelector('.scrolling-right');
-  const rightArrow: HTMLDivElement | null = document?.querySelector('.scrolling-left');
+  const titlesElem: HTMLDivElement | null = document?.querySelector(".titles");
+  const lastButton: any = document?.querySelector(".titles > *")?.lastElementChild;
+  const activeElem: HTMLDivElement | null | undefined = titlesElem?.querySelector(".active");
+  const leftArrow: HTMLDivElement | null = document?.querySelector(".scrolling-right");
+  const rightArrow: HTMLDivElement | null = document?.querySelector(".scrolling-left");
 
-  const marginBottom = 10;
-  const titlesBottom = titlesElem && titlesElem.getBoundingClientRect().bottom + marginBottom;
+  const titlesBottom = titlesElem && titlesElem.getBoundingClientRect().bottom + MARGIN_BOTTOM;
 
   if (!activeElem) {
     return;
@@ -35,20 +35,19 @@ export const scrollHandler = () => {
   };
 
   if (selectedId && parseInt(selectedId) === 0 && leftArrow) {
-    leftArrow.style.display = 'none';
+    leftArrow.style.display = "none";
   } else if (leftArrow) {
-    leftArrow.style.display = 'block';
+    leftArrow.style.display = "block";
   }
 
   if (selectedId && parseInt(selectedId) === lastButton.dataset.id && rightArrow) {
-    rightArrow.style.display = 'none';
+    rightArrow.style.display = "none";
   } else if (rightArrow) {
-    rightArrow.style.display = 'block';
+    rightArrow.style.display = "block";
   }
 
   const scrollObserver = (entries: IntersectionObserverEntry[]) => {
-    const documentAtBottom =
-      document.documentElement.scrollTop + window.innerHeight >= document.documentElement.scrollHeight;
+    const documentAtBottom = document.documentElement.scrollTop + window.innerHeight >= document.documentElement.scrollHeight;
     const idsInView: string[] = [];
 
     entries.forEach((entry: IntersectionObserverEntry) => {
@@ -58,74 +57,58 @@ export const scrollHandler = () => {
     });
 
     if (documentAtBottom && idsInView.length) {
-      document?.querySelector(`.titles > * > .active`)?.classList.remove('active');
-      document?.querySelector(`.titles > * > [data-id="${idsInView[0]}"]`)?.classList.add('active');
+      document?.querySelector(`.titles > * > .active`)?.classList.remove("active");
+      document?.querySelector(`.titles > * > [data-id="${idsInView[0]}"]`)?.classList.add("active");
 
-      const timeoutId = window.setTimeout(() => setActiveTitlePosition(timeoutId), 50);
+      const timeoutId = window.setTimeout(() => setActiveTitlePosition(timeoutId), TIMEOUT_DELAY);
     }
   };
 
   const observer = new IntersectionObserver(scrollObserver, { threshold: 1.0 });
 
-  document?.querySelectorAll('.blocks > *').forEach((elem: Element) => {
+  document?.querySelectorAll(".blocks > *").forEach((elem: Element) => {
     const position: any = titlesBottom && elem?.getBoundingClientRect().top - titlesBottom;
-    
+
     observer.observe(elem);
 
-    if (position < marginBottom) {
+    if (position < MARGIN_BOTTOM) {
       selected.id = (elem as HTMLElement).dataset.id;
       selected.position = position;
     }
   });
 
   if (selectedId !== selected.id) {
-    document?.querySelector(`.titles > * > .active`)?.classList.remove('active');
-    document?.querySelector(`.titles > * > [data-id="${selected.id}"]`)?.classList.add('active');
+    document?.querySelector(`.titles > * > .active`)?.classList.remove("active");
+    document?.querySelector(`.titles > * > [data-id="${selected.id}"]`)?.classList.add("active");
 
-    const timeoutId = window.setTimeout(() => setActiveTitlePosition(timeoutId), 50);
+    const timeoutId = window.setTimeout(() => setActiveTitlePosition(timeoutId), TIMEOUT_DELAY);
   }
 };
 
-const scrollStepSize = 100;
-
-export const scrollLeft = (
-  event: MouseEvent<HTMLDivElement>,
-  titlesContainer: any,
-  leftArrow: any,
-  rightArrow: any
-) => {
+export const scrollLeft = (event: MouseEvent<HTMLDivElement>, titlesContainer: RefObject<HTMLElement>, leftArrow: RefObject<HTMLElement>, rightArrow: RefObject<HTMLElement>) => {
   event.preventDefault();
 
   if (titlesContainer?.current && leftArrow.current) {
-    leftArrow.current.style.display = 'block';
-    titlesContainer.current.scrollLeft += scrollStepSize;
+    leftArrow.current.style.display = "block";
+    titlesContainer.current.scrollLeft += SCROLL_STEP_SIZE;
 
-    const remainder = (titlesContainer.current.scrollWidth - titlesContainer.current.offsetWidth) % scrollStepSize;
+    const remainder = (titlesContainer.current.scrollWidth - titlesContainer.current.offsetWidth) % SCROLL_STEP_SIZE;
 
-    if (
-      rightArrow.current &&
-      titlesContainer.current.scrollLeft >=
-        titlesContainer.current.scrollWidth - titlesContainer.current.offsetWidth - remainder
-    ) {
-      rightArrow.current.style.display = 'none';
+    if (rightArrow.current && titlesContainer.current.scrollLeft >= titlesContainer.current.scrollWidth - titlesContainer.current.offsetWidth - remainder) {
+      rightArrow.current.style.display = "none";
     }
   }
 };
 
-export const scrollRight = (
-  event: MouseEvent<HTMLDivElement>,
-  titlesContainer: any,
-  leftArrow: any,
-  rightArrow: any
-) => {
+export const scrollRight = (event: MouseEvent<HTMLDivElement>, titlesContainer: RefObject<HTMLElement>, leftArrow: RefObject<HTMLElement>, rightArrow: RefObject<HTMLElement>) => {
   event.preventDefault();
 
   if (titlesContainer.current && rightArrow.current) {
-    rightArrow.current.style.display = 'block';
-    titlesContainer.current.scrollLeft -= scrollStepSize;
+    rightArrow.current.style.display = "block";
+    titlesContainer.current.scrollLeft -= SCROLL_STEP_SIZE;
 
-    if (leftArrow.current && titlesContainer.current.scrollLeft <= scrollStepSize) {
-      leftArrow.current.style.display = 'none';
+    if (leftArrow.current && titlesContainer.current.scrollLeft <= SCROLL_STEP_SIZE) {
+      leftArrow.current.style.display = "none";
     }
   }
 };
