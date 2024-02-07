@@ -1,8 +1,7 @@
-import { useLocation } from "react-router";
 import { useRef } from "react";
-import { scrollHandler, scrollLeft, scrollRight, scrollToActiveTitle, setActiveTitlePosition } from "../../helpers";
-import { HEIGHT_TITLES_BLOCK, TIMEOUT_DELAY, services } from "../../constants";
-import useScrollingServices from "../../hook";
+import { useHelperScrollingServices, useScrollingServices } from "../../hooks";
+import { scrollHandler, scrollLeft, scrollRight } from "../../helpers";
+import { HEIGHT_TITLES_BLOCK, services } from "../../constants";
 import "./styles.css";
 
 interface Service {
@@ -15,45 +14,9 @@ const ScrollableMenu = () => {
   const rightArrow = useRef<HTMLDivElement>(null);
   const leftArrow = useRef<HTMLDivElement>(null);
 
-  const location = useLocation();
+  useScrollingServices(leftArrow, scrollHandler, HEIGHT_TITLES_BLOCK);
 
-  const activeServiceBlock = {
-    id: location.state?.activeTitle || 0,
-    position: 0,
-  };
-
-  useScrollingServices(leftArrow, scrollHandler, location, HEIGHT_TITLES_BLOCK);
-
-  document?.querySelectorAll(".blocks > *").forEach((elem: Element) => {
-    const headerBottom = document?.querySelector(".titles");
-
-    if (headerBottom) {
-      const position = elem?.getBoundingClientRect().top - headerBottom.getBoundingClientRect().bottom + HEIGHT_TITLES_BLOCK;
-
-      if (position < HEIGHT_TITLES_BLOCK) {
-        activeServiceBlock.id = Number((elem as HTMLElement).dataset.id);
-        activeServiceBlock.position = position;
-      }
-    }
-  });
-
-  document?.querySelector(`.titles > * > .active`)?.classList.remove("active");
-  document?.querySelector(`.titles > * > [data-id="${activeServiceBlock.id}"]`)?.classList.add("active");
-
-  const timeoutId = window.setTimeout(() => setActiveTitlePosition(timeoutId), TIMEOUT_DELAY);
-
-  document?.querySelector(".titles")?.addEventListener("click", (event: any) => {
-      event.preventDefault();
-
-      const id = event.target?.dataset.id;
-
-      if (id) {
-        document.querySelector(`.titles > * > .active`)?.classList.remove("active");
-        document.querySelector(`.titles > * > [data-id="${id}"]`)?.classList.add("active");
-        
-        scrollToActiveTitle(id);
-      }
-    });
+  useHelperScrollingServices();
 
   return (
     <>
