@@ -92,30 +92,30 @@ export const scrollHandler = () => {
   }
 };
 
-export const scrollLeft = (event: MouseEvent<HTMLDivElement>, titlesContainer: RefObject<HTMLElement>, leftArrow: RefObject<HTMLElement>, rightArrow: RefObject<HTMLElement>) => {
+export const scrollLeft = (event: MouseEvent<HTMLDivElement>, titlesContainer: RefObject<HTMLDivElement>, leftArrow: RefObject<HTMLDivElement>, rightArrow: RefObject<HTMLDivElement>): void => {
   event.preventDefault();
 
-  if (titlesContainer?.current && leftArrow.current) {
-    leftArrow.current.style.display = "block";
-    titlesContainer.current.scrollLeft += SCROLL_STEP_SIZE;
-
-    const remainder = (titlesContainer.current.scrollWidth - titlesContainer.current.offsetWidth) % SCROLL_STEP_SIZE;
-
-    if (rightArrow.current && titlesContainer.current.scrollLeft >= titlesContainer.current.scrollWidth - titlesContainer.current.offsetWidth - remainder) {
-      rightArrow.current.style.display = "none";
-    }
-  }
+  handleScroll(titlesContainer, leftArrow, rightArrow, SCROLL_STEP_SIZE);
 };
 
-export const scrollRight = (event: MouseEvent<HTMLDivElement>, titlesContainer: RefObject<HTMLElement>, leftArrow: RefObject<HTMLElement>, rightArrow: RefObject<HTMLElement>) => {
+export const scrollRight = (event: MouseEvent<HTMLDivElement>, titlesContainer: RefObject<HTMLDivElement>, leftArrow: RefObject<HTMLDivElement>, rightArrow: RefObject<HTMLDivElement>): void => {
   event.preventDefault();
 
-  if (titlesContainer.current && rightArrow.current) {
-    rightArrow.current.style.display = "block";
-    titlesContainer.current.scrollLeft -= SCROLL_STEP_SIZE;
-
-    if (leftArrow.current && titlesContainer.current.scrollLeft <= SCROLL_STEP_SIZE) {
-      leftArrow.current.style.display = "none";
-    }
-  }
+  handleScroll(titlesContainer, leftArrow, rightArrow, -SCROLL_STEP_SIZE);
 };
+
+function handleScroll(titlesContainer: RefObject<HTMLDivElement>, leftArrow: RefObject<HTMLDivElement>, rightArrow: RefObject<HTMLDivElement>, stepSize: number): void {
+  const container = titlesContainer.current;
+
+  if (!container) {
+    return;
+  }
+
+  container.scrollLeft += stepSize;
+
+  const atStart = container.scrollLeft <= 0;
+  const atEnd = container.scrollLeft + container.offsetWidth >= container.scrollWidth;
+
+  leftArrow.current!.style.display = atStart ? "none" : "block";
+  rightArrow.current!.style.display = atEnd ? "none" : "block";
+}
