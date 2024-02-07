@@ -2,41 +2,47 @@ import { RefObject, useEffect } from "react";
 import { Location } from "react-router";
 import { HEIGHT_SCROLL_TOP } from "../constants";
 
-const useScrollingServices = (leftArrow: RefObject<HTMLDivElement>, scrollHandler: (event: number) => void, location: Location, HEIGHT_TITLES_BLOCK: number) =>
+const useScrollingServices = (leftArrow: RefObject<HTMLDivElement>, scrollHandler: (timestamp: number) => void, location: Location, HEIGHT_TITLES_BLOCK: number) =>
   useEffect(() => {
-    if (leftArrow.current) {
-      leftArrow.current.style.display = "none";
-    }
+    leftArrow.current?.style.setProperty("display", "none");
 
-    const scrollHelper = () => {
-      let scrolling = false;
+    let lastRafId: number | null = null;
 
-      if (!scrolling) {
-        window.requestAnimationFrame((event) => {
-          scrollHandler(event);
-
-          scrolling = false;
+    const throttledScrollHandler = () => {
+      if (lastRafId === null) {
+        lastRafId = window.requestAnimationFrame((timestamp) => {
+          scrollHandler(timestamp);
+          lastRafId = null;
         });
-
-        scrolling = true;
       }
     };
 
-    const pagePosition = window.scrollY;
-    const activeTopPosition: number | undefined = document?.querySelector(`.blocks [data-id="${location.state?.activeTitle}"]`)?.getBoundingClientRect().top;
-    const titlesElem: HTMLDivElement | null = document?.querySelector(".titles");
-    const titlesBottomLinePosition: number | null = titlesElem && titlesElem?.getBoundingClientRect().bottom - (titlesElem?.getBoundingClientRect().bottom - titlesElem.clientHeight);
+    const scrollToActiveTitle = () => {
+      const activeTitleElement = document.querySelector<HTMLDivElement>(`.blocks [data-id="${location.state?.activeTitle}"]`);
+      const titlesElement = document.querySelector<HTMLDivElement>(".titles");
 
-    if (activeTopPosition && titlesBottomLinePosition) {
-      window?.scrollTo({
-        top: activeTopPosition + pagePosition - (titlesBottomLinePosition + HEIGHT_TITLES_BLOCK) + HEIGHT_SCROLL_TOP,
-        behavior: "smooth",
-      });
-    }
+      if (activeTitleElement && titlesElement) {
+        const titlesBottomLinePosition = titlesElement.getBoundingClientRect().bottom - titlesElement.clientHeight;
+        const activeTopPosition = activeTitleElement.getBoundingClientRect().top;
 
-    window.addEventListener("scroll", scrollHelper);
+        window.scrollTo({
+          top: window.scrollY + activeTopPosition - titlesBottomLinePosition - HEIGHT_TITLES_BLOCK + HEIGHT_SCROLL_TOP,
+          behavior: "smooth",
+        });
+      }
+    };
 
-    return () => window.removeEventListener("scroll", scrollHelper);
-  }, [HEIGHT_TITLES_BLOCK, leftArrow, location.state, scrollHandler]);
+    scrollToActiveTitle();
+
+    window.addEventListener("scroll", throttledScrollHandler);
+
+    return () => {
+      window.removeEventListener("scroll", throttledScrollHandler);
+
+      if (lastRafId) {
+        window.cancelAnimationFrame(lastRafId);
+      }
+    };
+  }, [leftArrow, scrollHandler, location.state, HEIGHT_TITLES_BLOCK]);
 
 export default useScrollingServices;
